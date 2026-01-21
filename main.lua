@@ -14,7 +14,7 @@ local gui = player:WaitForChild("PlayerGui")
 
 -- Create ScreenGui
 local ScreenGui = Instance.new("ScreenGui")
-ScreenGui.Name = "CoolExploitUI"
+ScreenGui.Name = "QuickXHub"
 ScreenGui.ResetOnSpawn = false
 ScreenGui.Parent = gui
 

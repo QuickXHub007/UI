@@ -1,5 +1,6 @@
--- [ UI Library - Modern Exploit GUI ] --
--- Drag PC + Mobile + Toggle Icon + Tabs + Gradient + ImageButton
+-- // Exploit UI Library v1.0 - Cool Gradient Style
+-- // Support PC + Mobile Drag, Minimize Button, Tabs, ImageButton
+-- // Usage: loadstring(game:HttpGet("your_link"))()
 
 local Library = {}
 
@@ -7,104 +8,112 @@ local UserInputService = game:GetService("UserInputService")
 local TweenService = game:GetService("TweenService")
 local RunService = game:GetService("RunService")
 
-local ScreenGui = Instance.new("ScreenGui")
-ScreenGui.Name = "ModernExploitUI"
-ScreenGui.ResetOnSpawn = false
-ScreenGui.Parent = game:GetService("CoreGui") -- หรือ game.Players.LocalPlayer:WaitForChild("PlayerGui") ถ้าไม่ใช่ exploit
-
--- สร้าง Toggle Button (Icon ลอย ๆ Drag ได้)
-local ToggleButton = Instance.new("ImageButton")
-ToggleButton.Name = "Toggle"
-ToggleButton.Size = UDim2.new(0, 60, 0, 60)
-ToggleButton.Position = UDim2.new(0.02, 0, 0.85, 0)
-ToggleButton.BackgroundTransparency = 0.4
-ToggleButton.Image = "rbxassetid://126349969692217" -- ไอคอนตามที่ขอ
-ToggleButton.ImageColor3 = Color3.fromRGB(255, 255, 255)
-ToggleButton.BackgroundColor3 = Color3.fromRGB(20, 20, 30)
-ToggleButton.Parent = ScreenGui
-
-local ToggleCorner = Instance.new("UICorner")
-ToggleCorner.CornerRadius = UDim.new(1, 0)
-ToggleCorner.Parent = ToggleButton
-
-local ToggleGradient = Instance.new("UIGradient")
-ToggleGradient.Color = ColorSequence.new{
-    ColorSequenceKeypoint.new(0, Color3.fromRGB(60, 160, 255)),
-    ColorSequenceKeypoint.new(1, Color3.fromRGB(100, 80, 255))
+-- // Config สีเท่ ๆ (gradient dark cyberpunk vibe)
+local Theme = {
+    Accent = Color3.fromRGB(0, 255, 200),
+    Dark = Color3.fromRGB(10, 10, 25),
+    Darker = Color3.fromRGB(5, 5, 15),
+    Text = Color3.fromRGB(220, 220, 255),
+    Gradient1 = ColorSequence.new{
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(30, 30, 60)),
+        ColorSequenceKeypoint.new(0.5, Color3.fromRGB(0, 80, 120)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 200, 150))
+    }
 }
-ToggleGradient.Rotation = 45
-ToggleGradient.Parent = ToggleButton
 
--- Main Frame
-local MainFrame = Instance.new("Frame")
-MainFrame.Name = "Main"
-MainFrame.Size = UDim2.new(0, 520, 0, 380)
-MainFrame.Position = UDim2.new(0.5, -260, 0.5, -190)
-MainFrame.BackgroundColor3 = Color3.fromRGB(18, 18, 28)
-MainFrame.BackgroundTransparency = 0.05
-MainFrame.Visible = false
-MainFrame.Parent = ScreenGui
+-- // สร้าง ScreenGui
+function Library:CreateWindow(title)
+    local ScreenGui = Instance.new("ScreenGui")
+    ScreenGui.Name = "ExploitUI"
+    ScreenGui.ResetOnSpawn = false
+    ScreenGui.Parent = game.CoreGui
 
-local MainCorner = Instance.new("UICorner")
-MainCorner.CornerRadius = UDim.new(0, 12)
-MainCorner.Parent = MainFrame
+    local MainFrame = Instance.new("Frame")
+    MainFrame.Size = UDim2.new(0, 520, 0, 380)
+    MainFrame.Position = UDim2.new(0.5, -260, 0.5, -190)
+    MainFrame.BackgroundColor3 = Theme.Dark
+    MainFrame.BorderSizePixel = 0
+    MainFrame.ClipsDescendants = true
+    MainFrame.Parent = ScreenGui
 
-local MainGradient = Instance.new("UIGradient")
-MainGradient.Color = ColorSequence.new{
-    ColorSequenceKeypoint.new(0, Color3.fromRGB(30, 30, 50)),
-    ColorSequenceKeypoint.new(0.5, Color3.fromRGB(50, 40, 80)),
-    ColorSequenceKeypoint.new(1, Color3.fromRGB(30, 30, 50))
-}
-MainGradient.Rotation = -45
-MainGradient.Parent = MainFrame
+    -- Gradient Background
+    local UIGradient = Instance.new("UIGradient")
+    UIGradient.Color = Theme.Gradient1
+    UIGradient.Rotation = 45
+    UIGradient.Parent = MainFrame
 
-local MainStroke = Instance.new("UIStroke")
-MainStroke.Color = Color3.fromRGB(80, 120, 255)
-MainStroke.Transparency = 0.6
-MainStroke.Thickness = 1.5
-MainStroke.Parent = MainFrame
+    -- Corner
+    local UICorner = Instance.new("UICorner")
+    UICorner.CornerRadius = UDim.new(0, 12)
+    UICorner.Parent = MainFrame
 
--- Title Bar (สำหรับ Drag)
-local TitleBar = Instance.new("Frame")
-TitleBar.Name = "Title"
-TitleBar.Size = UDim2.new(1, 0, 0, 45)
-TitleBar.BackgroundColor3 = Color3.fromRGB(25, 25, 40)
-TitleBar.Parent = MainFrame
+    -- Stroke glow
+    local UIStroke = Instance.new("UIStroke")
+    UIStroke.Color = Theme.Accent
+    UIStroke.Transparency = 0.4
+    UIStroke.Thickness = 2
+    UIStroke.Parent = MainFrame
 
-local TitleLabel = Instance.new("TextLabel")
-TitleLabel.Size = UDim2.new(1, -50, 1, 0)
-TitleLabel.Position = UDim2.new(0, 15, 0, 0)
-TitleLabel.BackgroundTransparency = 1
-TitleLabel.Text = "Modern Exploit UI"
-TitleLabel.TextColor3 = Color3.fromRGB(220, 220, 255)
-TitleLabel.TextSize = 18
-TitleLabel.Font = Enum.Font.GothamBold
-TitleLabel.Parent = TitleBar
+    -- Title Bar (สำหรับ drag)
+    local TitleBar = Instance.new("Frame")
+    TitleBar.Size = UDim2.new(1, 0, 0, 45)
+    TitleBar.BackgroundTransparency = 1
+    TitleBar.Parent = MainFrame
 
--- Tab Container
-local TabContainer = Instance.new("Frame")
-TabContainer.Name = "Tabs"
-TabContainer.Size = UDim2.new(0, 140, 1, -45)
-TabContainer.Position = UDim2.new(0, 0, 0, 45)
-TabContainer.BackgroundTransparency = 1
-TabContainer.Parent = MainFrame
+    local TitleLabel = Instance.new("TextLabel")
+    TitleLabel.Size = UDim2.new(0.7, 0, 1, 0)
+    TitleLabel.Position = UDim2.new(0.03, 0, 0, 0)
+    TitleLabel.BackgroundTransparency = 1
+    TitleLabel.Text = title or "Exploit Hub"
+    TitleLabel.TextColor3 = Theme.Text
+    TitleLabel.TextSize = 20
+    TitleLabel.Font = Enum.Font.GothamBold
+    TitleLabel.TextXAlignment = Enum.TextXAlignment.Left
+    TitleLabel.Parent = TitleBar
 
-local TabList = Instance.new("UIListLayout")
-TabList.Padding = UDim.new(0, 8)
-TabList.SortOrder = Enum.SortOrder.LayoutOrder
-TabList.Parent = TabContainer
+    -- Minimize / Close Button (ImageButton)
+    local MinimizeButton = Instance.new("ImageButton")
+    MinimizeButton.Size = UDim2.new(0, 28, 0, 28)
+    MinimizeButton.Position = UDim2.new(1, -38, 0.5, -14)
+    MinimizeButton.BackgroundTransparency = 1
+    MinimizeButton.Image = "rbxassetid://126349969692217"  -- เปลี่ยนเป็น ID ที่ต้องการ หรือใช้ icon วงกลม -
+    MinimizeButton.ImageColor3 = Theme.Accent
+    MinimizeButton.Parent = TitleBar
 
-local ContentContainer = Instance.new("Frame")
-ContentContainer.Name = "Content"
-ContentContainer.Size = UDim2.new(1, -150, 1, -55)
-ContentContainer.Position = UDim2.new(0, 150, 0, 50)
-ContentContainer.BackgroundTransparency = 1
-ContentContainer.Parent = MainFrame
+    local CloseButton = Instance.new("ImageButton")
+    CloseButton.Size = UDim2.new(0, 28, 0, 28)
+    CloseButton.Position = UDim2.new(1, -70, 0.5, -14)
+    CloseButton.BackgroundTransparency = 1
+    CloseButton.Image = "rbxassetid://7072721035"  -- icon X ปิด (หรือใช้ของตัวเอง)
+    CloseButton.ImageColor3 = Color3.fromRGB(255, 80, 80)
+    CloseButton.Parent = TitleBar
 
--- ฟังก์ชัน Drag (รองรับทั้ง Mouse + Touch)
-local function makeDraggable(frame, dragArea)
-    local dragging = false
-    local dragInput, dragStart, startPos
+    -- Tab Container
+    local TabContainer = Instance.new("Frame")
+    TabContainer.Size = UDim2.new(0.22, 0, 1, -45)
+    TabContainer.Position = UDim2.new(0, 0, 0, 45)
+    TabContainer.BackgroundTransparency = 0.3
+    TabContainer.BackgroundColor3 = Theme.Darker
+    TabContainer.Parent = MainFrame
+
+    local TabList = Instance.new("UIListLayout")
+    TabList.SortOrder = Enum.SortOrder.LayoutOrder
+    TabList.Padding = UDim.new(0, 8)
+    TabList.Parent = TabContainer
+
+    local UIPadding = Instance.new("UIPadding")
+    UIPadding.PaddingTop = UDim.new(0, 10)
+    UIPadding.PaddingLeft = UDim.new(0, 8)
+    UIPadding.Parent = TabContainer
+
+    local ContentContainer = Instance.new("Frame")
+    ContentContainer.Size = UDim2.new(0.78, 0, 1, -45)
+    ContentContainer.Position = UDim2.new(0.22, 0, 0, 45)
+    ContentContainer.BackgroundTransparency = 1
+    ContentContainer.Parent = MainFrame
+
+    -- // Drag Logic (PC + Mobile)
+    local dragging, dragInput, dragStart, startPos
 
     local function update(input)
         local delta = input.Position - dragStart
@@ -114,14 +123,14 @@ local function makeDraggable(frame, dragArea)
             startPos.Y.Scale,
             startPos.Y.Offset + delta.Y
         )
-        TweenService:Create(frame, TweenInfo.new(0.12, Enum.EasingStyle.Sine), {Position = newPos}):Play()
+        MainFrame.Position = newPos
     end
 
-    dragArea.InputBegan:Connect(function(input)
+    TitleBar.InputBegan:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
             dragging = true
             dragStart = input.Position
-            startPos = frame.Position
+            startPos = MainFrame.Position
 
             input.Changed:Connect(function()
                 if input.UserInputState == Enum.UserInputState.End then
@@ -131,7 +140,7 @@ local function makeDraggable(frame, dragArea)
         end
     end)
 
-    dragArea.InputChanged:Connect(function(input)
+    TitleBar.InputChanged:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
             dragInput = input
         end
@@ -142,149 +151,247 @@ local function makeDraggable(frame, dragArea)
             update(input)
         end
     end)
-end
 
--- ทำให้ MainFrame Drag ได้ (ใช้ TitleBar)
-makeDraggable(MainFrame, TitleBar)
-
--- ทำให้ ToggleButton Drag ได้ด้วย
-makeDraggable(ScreenGui, ToggleButton) -- ใช้ ScreenGui เป็น parent แต่ drag ตัว Toggle
-
--- Toggle GUI
-local guiVisible = false
-
-ToggleButton.MouseButton1Click:Connect(function()
-    guiVisible = not guiVisible
-    MainFrame.Visible = guiVisible
-    
-    if guiVisible then
-        TweenService:Create(MainFrame, TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {BackgroundTransparency = 0.05}):Play()
-    else
-        TweenService:Create(MainFrame, TweenInfo.new(0.2), {BackgroundTransparency = 1}):Play()
-    end
-end)
-
--- Tab System
-function Library:CreateTab(name, iconId)
-    local TabButton = Instance.new("ImageButton")
-    TabButton.Size = UDim2.new(1, -10, 0, 50)
-    TabButton.Position = UDim2.new(0, 5, 0, 0)
-    TabButton.BackgroundColor3 = Color3.fromRGB(35, 35, 55)
-    TabButton.AutoButtonColor = false
-    TabButton.Image = iconId or ""
-    TabButton.ImageTransparency = iconId and 0 or 1
-    TabButton.Parent = TabContainer
-    
-    local TabCorner = Instance.new("UICorner")
-    TabCorner.CornerRadius = UDim.new(0, 8)
-    TabCorner.Parent = TabButton
-    
-    local TabGradient = Instance.new("UIGradient")
-    TabGradient.Color = ColorSequence.new{
-        ColorSequenceKeypoint.new(0, Color3.fromRGB(70, 70, 100)),
-        ColorSequenceKeypoint.new(1, Color3.fromRGB(40, 40, 70))
-    }
-    TabGradient.Parent = TabButton
-    
-    local TabLabel = Instance.new("TextLabel")
-    TabLabel.Size = UDim2.new(1, -60, 1, 0)
-    TabLabel.Position = UDim2.new(0, 55, 0, 0)
-    TabLabel.BackgroundTransparency = 1
-    TabLabel.Text = name
-    TabLabel.TextColor3 = Color3.fromRGB(200, 200, 240)
-    TabLabel.TextSize = 15
-    TabLabel.Font = Enum.Font.GothamSemibold
-    TabLabel.TextXAlignment = Enum.TextXAlignment.Left
-    TabLabel.Parent = TabButton
-    
-    local TabContent = Instance.new("Frame")
-    TabContent.Name = name.."Content"
-    TabContent.Size = UDim2.new(1, 0, 1, 0)
-    TabContent.BackgroundTransparency = 1
-    TabContent.Visible = false
-    TabContent.Parent = ContentContainer
-    
-    local ContentList = Instance.new("UIListLayout")
-    ContentList.Padding = UDim.new(0, 10)
-    ContentList.SortOrder = Enum.SortOrder.LayoutOrder
-    ContentList.Parent = TabContent
-    
-    -- Tab Switch
-    local function showTab()
-        for _, content in pairs(ContentContainer:GetChildren()) do
-            if content:IsA("Frame") then
-                content.Visible = false
-            end
+    -- Minimize Toggle
+    local minimized = false
+    MinimizeButton.MouseButton1Click:Connect(function()
+        minimized = not minimized
+        if minimized then
+            TweenService:Create(MainFrame, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {Size = UDim2.new(0, 520, 0, 45)}):Play()
+        else
+            TweenService:Create(MainFrame, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {Size = UDim2.new(0, 520, 0, 380)}):Play()
         end
-        TabContent.Visible = true
-        
-        -- Highlight tab
-        for _, btn in pairs(TabContainer:GetChildren()) do
-            if btn:IsA("ImageButton") then
-                TweenService:Create(btn, TweenInfo.new(0.25), {BackgroundColor3 = Color3.fromRGB(35, 35, 55)}):Play()
+    end)
+
+    -- Close
+    CloseButton.MouseButton1Click:Connect(function()
+        ScreenGui:Destroy()
+    end)
+
+    local window = {}
+    local currentTab = nil
+
+    function window:CreateTab(name)
+        local TabButton = Instance.new("ImageButton")
+        TabButton.Size = UDim2.new(1, -16, 0, 40)
+        TabButton.BackgroundTransparency = 0.4
+        TabButton.BackgroundColor3 = Theme.Dark
+        TabButton.ImageTransparency = 0.6
+        TabButton.Image = "rbxassetid://126349969692217"  -- icon tab (หรือเปลี่ยน)
+        TabButton.ImageColor3 = Theme.Accent
+        TabButton.Parent = TabContainer
+
+        local TabCorner = Instance.new("UICorner")
+        TabCorner.CornerRadius = UDim.new(0, 10)
+        TabCorner.Parent = TabButton
+
+        local TabLabel = Instance.new("TextLabel")
+        TabLabel.Size = UDim2.new(1, -50, 1, 0)
+        TabLabel.Position = UDim2.new(0, 45, 0, 0)
+        TabLabel.BackgroundTransparency = 1
+        TabLabel.Text = name
+        TabLabel.TextColor3 = Theme.Text
+        TabLabel.TextSize = 16
+        TabLabel.Font = Enum.Font.GothamSemibold
+        TabLabel.TextXAlignment = Enum.TextXAlignment.Left
+        TabLabel.Parent = TabButton
+
+        local TabContent = Instance.new("Frame")
+        TabContent.Size = UDim2.new(1, 0, 1, 0)
+        TabContent.BackgroundTransparency = 1
+        TabContent.Visible = false
+        TabContent.Parent = ContentContainer
+
+        local UIPaddingContent = Instance.new("UIPadding")
+        UIPaddingContent.PaddingTop = UDim.new(0, 12)
+        UIPaddingContent.PaddingLeft = UDim.new(0, 12)
+        UIPaddingContent.PaddingRight = UDim.new(0, 12)
+        UIPaddingContent.Parent = TabContent
+
+        local UIList = Instance.new("UIListLayout")
+        UIList.Padding = UDim.new(0, 10)
+        UIList.SortOrder = Enum.SortOrder.LayoutOrder
+        UIList.Parent = TabContent
+
+        TabButton.MouseButton1Click:Connect(function()
+            if currentTab then
+                currentTab.Visible = false
             end
-        end
-        TweenService:Create(TabButton, TweenInfo.new(0.25), {BackgroundColor3 = Color3.fromRGB(60, 100, 200)}):Play()
-    end
-    
-    TabButton.MouseButton1Click:Connect(showTab)
-    
-    -- Auto open first tab
-    if #ContentContainer:GetChildren() <= 1 then
-        showTab()
-    end
-    
-    local tab = {}
-    
-    function tab:CreateButton(text, callback)
-        local Button = Instance.new("TextButton")
-        Button.Size = UDim2.new(1, -20, 0, 40)
-        Button.BackgroundColor3 = Color3.fromRGB(45, 45, 70)
-        Button.Text = text
-        Button.TextColor3 = Color3.fromRGB(220, 220, 255)
-        Button.Font = Enum.Font.GothamBold
-        Button.TextSize = 14
-        Button.Parent = TabContent
-        
-        local BtnCorner = Instance.new("UICorner")
-        BtnCorner.CornerRadius = UDim.new(0, 8)
-        BtnCorner.Parent = Button
-        
-        local BtnGradient = Instance.new("UIGradient")
-        BtnGradient.Color = ColorSequence.new{
-            ColorSequenceKeypoint.new(0, Color3.fromRGB(80, 140, 255)),
-            ColorSequenceKeypoint.new(1, Color3.fromRGB(100, 80, 220))
-        }
-        BtnGradient.Parent = Button
-        
-        Button.MouseButton1Click:Connect(function()
-            if callback then callback() end
-            -- Ripple effect สั้น ๆ
-            local ripple = Instance.new("Frame")
-            ripple.Size = UDim2.new(0,0,0,0)
-            ripple.Position = UDim2.new(0.5,0,0.5,0)
-            ripple.AnchorPoint = Vector2.new(0.5,0.5)
-            ripple.BackgroundColor3 = Color3.fromRGB(255,255,255)
-            ripple.BackgroundTransparency = 0.7
-            ripple.ZIndex = 10
-            ripple.Parent = Button
-            local rippleCorner = Instance.new("UICorner")
-            rippleCorner.CornerRadius = UDim.new(1,0)
-            rippleCorner.Parent = ripple
-            
-            TweenService:Create(ripple, TweenInfo.new(0.6), {
-                Size = UDim2.new(2,0,2,0),
-                BackgroundTransparency = 1
-            }):Play()
-            game.Debris:AddItem(ripple, 0.7)
+            TabContent.Visible = true
+            currentTab = TabContent
+
+            -- Highlight tab
+            for _, btn in TabContainer:GetChildren() do
+                if btn:IsA("ImageButton") then
+                    TweenService:Create(btn, TweenInfo.new(0.3), {BackgroundTransparency = 0.4}):Play()
+                end
+            end
+            TweenService:Create(TabButton, TweenInfo.new(0.3), {BackgroundTransparency = 0.1}):Play()
         end)
-        
-        return Button
+
+        local tab = {}
+
+        function tab:Button(text, callback)
+            local Btn = Instance.new("ImageButton")
+            Btn.Size = UDim2.new(1, 0, 0, 42)
+            Btn.BackgroundColor3 = Theme.Dark
+            Btn.ImageTransparency = 1
+            Btn.Parent = TabContent
+
+            local BtnCorner = Instance.new("UICorner")
+            BtnCorner.CornerRadius = UDim.new(0, 10)
+            BtnCorner.Parent = Btn
+
+            local BtnLabel = Instance.new("TextLabel")
+            BtnLabel.Size = UDim2.new(1, 0, 1, 0)
+            BtnLabel.BackgroundTransparency = 1
+            BtnLabel.Text = text
+            BtnLabel.TextColor3 = Theme.Text
+            BtnLabel.Font = Enum.Font.Gotham
+            BtnLabel.TextSize = 15
+            BtnLabel.Parent = Btn
+
+            Btn.MouseButton1Click:Connect(callback or function() end)
+
+            Btn.MouseEnter:Connect(function()
+                TweenService:Create(Btn, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(30, 30, 60)}):Play()
+            end)
+
+            Btn.MouseLeave:Connect(function()
+                TweenService:Create(Btn, TweenInfo.new(0.2), {BackgroundColor3 = Theme.Dark}):Play()
+            end)
+
+            return Btn
+        end
+
+        function tab:Toggle(text, default, callback)
+            local ToggleFrame = Instance.new("Frame")
+            ToggleFrame.Size = UDim2.new(1, 0, 0, 42)
+            ToggleFrame.BackgroundTransparency = 1
+            ToggleFrame.Parent = TabContent
+
+            local Label = Instance.new("TextLabel")
+            Label.Size = UDim2.new(0.8, 0, 1, 0)
+            Label.BackgroundTransparency = 1
+            Label.Text = text
+            Label.TextColor3 = Theme.Text
+            Label.TextSize = 15
+            Label.Font = Enum.Font.Gotham
+            Label.TextXAlignment = Enum.TextXAlignment.Left
+            Label.Parent = ToggleFrame
+
+            local Indicator = Instance.new("Frame")
+            Indicator.Size = UDim2.new(0, 44, 0, 24)
+            Indicator.Position = UDim2.new(1, -54, 0.5, -12)
+            Indicator.BackgroundColor3 = default and Theme.Accent or Color3.fromRGB(60, 60, 70)
+            Indicator.Parent = ToggleFrame
+
+            local IndicatorCorner = Instance.new("UICorner")
+            IndicatorCorner.CornerRadius = UDim.new(1, 0)
+            IndicatorCorner.Parent = Indicator
+
+            local state = default or false
+
+            local function updateToggle()
+                TweenService:Create(Indicator, TweenInfo.new(0.3), {
+                    BackgroundColor3 = state and Theme.Accent or Color3.fromRGB(60, 60, 70)
+                }):Play()
+                if callback then callback(state) end
+            end
+
+            ToggleFrame.InputBegan:Connect(function(input)
+                if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+                    state = not state
+                    updateToggle()
+                end
+            end)
+
+            updateToggle()
+
+            return { Toggle = function(v) state = v updateToggle() end }
+        end
+
+        function tab:Dropdown(text, options, callback)
+            local DropFrame = Instance.new("Frame")
+            DropFrame.Size = UDim2.new(1, 0, 0, 42)
+            DropFrame.BackgroundColor3 = Theme.Dark
+            DropFrame.Parent = TabContent
+
+            local DropCorner = Instance.new("UICorner")
+            DropCorner.CornerRadius = UDim.new(0, 10)
+            DropCorner.Parent = DropFrame
+
+            local DropLabel = Instance.new("TextLabel")
+            DropLabel.Size = UDim2.new(0.7, 0, 1, 0)
+            DropLabel.BackgroundTransparency = 1
+            DropLabel.Text = text
+            DropLabel.TextColor3 = Theme.Text
+            DropLabel.TextSize = 15
+            DropLabel.Parent = DropFrame
+
+            local Selected = Instance.new("TextLabel")
+            Selected.Size = UDim2.new(0.3, -10, 0.8, 0)
+            Selected.Position = UDim2.new(0.7, 5, 0.1, 0)
+            Selected.BackgroundColor3 = Theme.Darker
+            Selected.Text = options[1] or "..."
+            Selected.TextColor3 = Theme.Accent
+            Selected.TextSize = 14
+            Selected.Parent = DropFrame
+
+            local SelectedCorner = Instance.new("UICorner")
+            SelectedCorner.CornerRadius = UDim.new(0, 8)
+            SelectedCorner.Parent = Selected
+
+            -- Dropdown logic (simple version)
+            local listVisible = false
+            local List = Instance.new("ScrollingFrame")
+            List.Size = UDim2.new(0.3, -10, 0, 0)
+            List.Position = UDim2.new(0.7, 5, 1, 5)
+            List.BackgroundColor3 = Theme.Darker
+            List.Visible = false
+            List.CanvasSize = UDim2.new(0,0,0,0)
+            List.Parent = DropFrame
+
+            local ListLayout = Instance.new("UIListLayout")
+            ListLayout.Padding = UDim.new(0, 4)
+            ListLayout.Parent = List
+
+            for _, opt in ipairs(options) do
+                local Btn = Instance.new("TextButton")
+                Btn.Size = UDim2.new(1, 0, 0, 30)
+                Btn.BackgroundTransparency = 1
+                Btn.Text = opt
+                Btn.TextColor3 = Theme.Text
+                Btn.Parent = List
+
+                Btn.MouseButton1Click:Connect(function()
+                    Selected.Text = opt
+                    List.Visible = false
+                    listVisible = false
+                    if callback then callback(opt) end
+                end)
+            end
+
+            List.CanvasSize = UDim2.new(0,0,0, #options * 34)
+
+            Selected.MouseButton1Click:Connect(function()
+                listVisible = not listVisible
+                List.Visible = listVisible
+                List.Size = UDim2.new(0.3, -10, 0, math.min(#options * 34, 140))
+            end)
+
+            return { Set = function(v) Selected.Text = v end }
+        end
+
+        return tab
     end
-    
-    -- เพิ่มฟังก์ชันอื่น ๆ ได้ เช่น Toggle, Slider ฯลฯ
-    
-    return tab
+
+    -- Auto open first tab if exist
+    if #TabContainer:GetChildren() > 0 then
+        TabContainer:GetChildren()[1]:InputBegan:Fire(Enum.UserInputType.MouseButton1)
+    end
+
+    return window
 end
 
 return Library
